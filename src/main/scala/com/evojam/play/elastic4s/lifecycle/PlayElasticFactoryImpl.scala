@@ -4,15 +4,11 @@ import javax.inject.{Inject, Singleton}
 
 import scala.collection.mutable
 import scala.concurrent.Future
-
 import play.api.inject.ApplicationLifecycle
-
-import org.elasticsearch.common.settings.Settings
-
-import com.sksamuel.elastic4s.{ElasticsearchClientUri, ElasticClient}
-
+import com.sksamuel.elastic4s.ElasticClient
 import com.evojam.play.elastic4s.PlayElasticFactory
-import com.evojam.play.elastic4s.configuration.{LocalNodeSetup, RemoteClusterSetup, ClusterSetup}
+import com.evojam.play.elastic4s.configuration.{ClusterSetup, LocalNodeSetup, RemoteClusterSetup}
+import com.sksamuel.elastic4s.embedded.LocalNode
 
 
 @Singleton
@@ -28,7 +24,7 @@ class PlayElasticFactoryImpl @Inject()(lifecycle: ApplicationLifecycle) extends 
 
   def apply(cs: ClusterSetup) = clients.getOrElseUpdate(cs, withStopHook(cs match {
     case RemoteClusterSetup(uri, settings) => ElasticClient.transport(settings, uri)
-    case LocalNodeSetup(settings) => ElasticClient.local(settings)
+    case LocalNodeSetup(settings) => LocalNode(settings).elastic4sclient()
   }))
 
 }

@@ -16,7 +16,7 @@ object ClusterSetupLoader {
 
   val UriKey = "uri"
   val TypeKey = "type"
-  lazy val loader = new JsonSettingsLoader()
+  lazy val loader = new JsonSettingsLoader(false)
 
   def isTransport(config: Configuration) = config.getString(TypeKey) match {
     case Some("transport") => true
@@ -31,7 +31,7 @@ object ClusterSetupLoader {
     .getOrElse(throw new Elastic4sConfigException("Configuration field uri is mandatory"))
 
   def settings(config: Configuration): Settings = {
-    Settings.settingsBuilder()
+    Settings.builder()
       .put("client.transport.sniff", true) // Will discover other hosts by default
       .put(loader.load(config.underlying.root().render(ConfigRenderOptions.concise())))
       .build()
