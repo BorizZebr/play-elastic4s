@@ -31,9 +31,13 @@ object ClusterSetupLoader {
     .getOrElse(throw new Elastic4sConfigException("Configuration field uri is mandatory"))
 
   def settings(config: Configuration): Settings = {
+    val cfg = config.underlying.root()
+      .withoutKey(UriKey)
+      .withoutKey(TypeKey)
+      .render(ConfigRenderOptions.concise())
     Settings.builder()
       .put("client.transport.sniff", true) // Will discover other hosts by default
-      .put(loader.load(config.underlying.root().render(ConfigRenderOptions.concise())))
+      .put(loader.load(cfg))
       .build()
   }
 

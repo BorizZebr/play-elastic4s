@@ -1,7 +1,8 @@
 package com.evojam.play.elastic4s
 
+import com.sksamuel.elastic4s.get.RichGetResponse
+import com.sksamuel.elastic4s.searches.RichSearchResponse
 import play.api.libs.json.{Format, JsValue, Json}
-
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.search.{SearchHit, SearchHits}
@@ -9,9 +10,8 @@ import org.specs2.ScalaCheck
 import org.specs2.matcher.Matchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-import org.specs2.scalacheck.Parameters
-
-import com.sksamuel.elastic4s.{ElasticDsl, RichSearchResponse, RichGetResponse}
+import com.sksamuel.elastic4s.ElasticDsl
+import org.elasticsearch.common.bytes.BytesReference
 
 class JsonConversionSpec extends Specification with Matchers with Mockito with ScalaCheck with PlayElasticJsonSupport {
 
@@ -76,7 +76,7 @@ class JsonConversionSpec extends Specification with Matchers with Mockito with S
       }
       val foo = Foo(name, count)
       val reqBytes = FakeClient.indexQuery(foo).build.source
-      Json.parse(reqBytes.array).as[Foo] shouldEqual foo
+      Json.parse(BytesReference.toBytes(reqBytes)).as[Foo] shouldEqual foo
     }
   }
 }

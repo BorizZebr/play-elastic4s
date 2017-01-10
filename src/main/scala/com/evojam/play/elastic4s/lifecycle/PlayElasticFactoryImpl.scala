@@ -23,7 +23,7 @@ class PlayElasticFactoryImpl @Inject()(lifecycle: ApplicationLifecycle) extends 
   }
 
   def apply(cs: ClusterSetup) = clients.getOrElseUpdate(cs, withStopHook(cs match {
-    case RemoteClusterSetup(uri, settings) => ElasticClient.transport(settings, uri)
+    case RemoteClusterSetup(uri, _) => ElasticClient.transport(uri)//ElasticClient.transport(settings, uri)
     case LocalNodeSetup(settings) => LocalNode(settings).elastic4sclient()
   }))
 
